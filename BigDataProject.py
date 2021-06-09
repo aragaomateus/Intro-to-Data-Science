@@ -44,7 +44,7 @@ plt.imshow(r)
 plt.colorbar()
 pearson = applications_acceptances.corr('pearson')
 print(applications_acceptances.corr('pearson'))
-sns.regplot(x, y, ci=None).set_title(' Figure Q1')
+sns.regplot(x, y, ci=None).set_title(' Figure Q1 - applications v. acceptances')
 
 #%%
 
@@ -97,7 +97,7 @@ output = simple_linear_regress_func(rates_app) # run custom SLR function
 rSqr1 = output[2]
 x1 = rates 
 y1 = data['acceptances']
-sns.regplot(y1, x1, ci=None).set_title(' Figure Q2.1')
+sns.regplot(y1, x1, ci=None).set_title(' Figure Q2.1- Rates v. acceptances')
 
 
 
@@ -105,7 +105,7 @@ output = simple_linear_regress_func(raw_app) # run custom SLR function
 rSqr2 = output[2]
 x2 = data['applications']
 y2 = data['acceptances']
-sns.regplot(x2, y2, ci=None).set_title(' Figure Q2.2')
+sns.regplot(x2, y2, ci=None).set_title(' Figure Q2.2 - application v. acceptances')
 
 
 # raw number of applications is better 
@@ -122,19 +122,21 @@ application_per_student = data['applications'] / amount_of_students
 
 acceptances_per_student = data['acceptances'] / amount_of_students
 
+chance = data['acceptances']/data['applications']
+happening = data['applications']/data['applications']
+odds2 = chance / (happening-chance)
+maxOdd2 = np.argmax(odds2)
+
 acceptances_per_student = pd.DataFrame(acceptances_per_student)
 acceptances_per_student = acceptances_per_student.to_numpy()
 # index  = acceptances_per_student.columns.valuesindex
 
-high_odds = data['school_name'].iloc[maxOdd]
 odds = (data['acceptances']/(data['applications']-data['acceptances']))
 
 maxOdd = np.argmax(odds)
-for i in acceptances_per_student:
-    if i == maxOdd:
-        print (i)
+
 sns.regplot(amount_of_students,data['acceptances'] , ci=None).set_title(' Figure Q2.2')
-sns.regplot(data['applications'],odds , ci=None).set_title(' Figure Q3')
+sns.regplot(data['acceptances'],odds , ci=None).set_title(' Figure Q3 - acceptance v. odds')
 
 # THE CHRISTA MCAULIFFE SCHOOL\I.S. 187 index 304
 # print(acceptances_per_student.max())
@@ -200,8 +202,9 @@ plt.legend(['data','sata'])
 # plt.plot([0,numClasses],[1,1],color='red',linewidth=1) # Kaiser criterion line
 
 plt.bar(np.linspace(1,6,6),loadings[:,0])
-plt.xlabel('Question')
+plt.xlabel('column')
 plt.ylabel('Loading')
+plt.title('School qualities PCA')
 
 
 
@@ -246,11 +249,15 @@ plt.plot(np.linspace(1,numColumns,numColumns),np.transpose(eigSata),color='black
 plt.plot([1,numColumns],[1,1],color='red') # Kaiser criterion line
 plt.xlabel('Principal component (SATA)')
 plt.ylabel('Eigenvalue of SATA')
+plt.title('Measures of achievement PCA')
+
 plt.legend(['data','sata'])
 
 plt.bar(np.linspace(1,3,3),loadings2[:,0])
 plt.xlabel('Question')
 plt.ylabel('Loading')
+plt.title('Measures of achievement PCA')
+
 plt.bar(np.linspace(1,3,3),loadings2[:,1])
 plt.xlabel('Question')
 plt.ylabel('Loading')
@@ -333,7 +340,7 @@ t_test = stat.ttest_ind(very_rigorous,less_rigorous)
 mean_very_rigorous = sum(very_rigorous)/len(very_rigorous)
 mean_less_rigorous = sum(less_rigorous)/len(less_rigorous)
 
-sns.regplot(data.rigorous_instruction, data.student_achievement, ci=None).set_title(' Figure Q5')
+sns.regplot(data.rigorous_instruction, data.student_achievement, ci=None).set_title(' Figure Q5 - rigorous_instruction v. student_achievement')
 
         
 # mask = ~np.isnan(rigorous_instruction_data) & ~np.isnan(achievement_data) 
@@ -347,22 +354,22 @@ sns.regplot(data.rigorous_instruction, data.student_achievement, ci=None).set_ti
 # or class size) impacts objective measures of achievement or admission to HSPHS?
 # --correlation?
 # have a scatterplot for it
-acceptance_spending = data[['acceptances','per_pupil_spending']]
+acceptance_spending = data[['acceptances','per_pupil_spending']].dropna()
 correlation_accept_spending = acceptance_spending.corr('pearson')
 sns.regplot(data.acceptances, data.per_pupil_spending, ci=None).set_title(' Figure Q6.1')
 
 
-acceptance_classSize = data[['acceptances','avg_class_size']]
+acceptance_classSize = data[['acceptances','avg_class_size']].dropna()
 correlation_accept_classSize= acceptance_classSize.corr('pearson')
-sns.regplot(data.acceptances, data.avg_class_size, ci=None).set_title(' Figure Q6.2')
+sns.regplot(data.acceptances, data.avg_class_size, ci=None).set_title(' Figure Q6.2 - acceptances v.avg_class_size ')
 
-achievement_spending = data[['student_achievement','per_pupil_spending']]
-correlation_achievement_spending = acceptance_spending.corr('pearson')
-sns.regplot(data.student_achievement, data.per_pupil_spending, ci=None).set_title(' Figure Q6.3')
+achievement_spending = data[['student_achievement','per_pupil_spending']].dropna()
+correlation_achievement_spending = achievement_spending.corr('pearson')
+sns.regplot(data.student_achievement, data.per_pupil_spending, ci=None).set_title(' Figure Q6.3 - student_achievement v. per_pupil_spending')
 
-achievement_classSize = data[['student_achievement','avg_class_size']]
-correlation_achievement_classSize= acceptance_classSize.corr('pearson')
-sns.regplot(data.student_achievement, data.avg_class_size, ci=None).set_title(' Figure Q6.4')
+achievement_classSize = data[['student_achievement','avg_class_size']].dropna()
+correlation_achievement_classSize= achievement_classSize.corr('pearson')
+sns.regplot(data.student_achievement, data.avg_class_size, ci=None).set_title(' Figure Q6.4 - student_achievement v. avg_class_size')
 
 math_spending = data[['math_scores_exceed','per_pupil_spending']].dropna()
 correlation5= math_spending.corr('pearson')
@@ -387,21 +394,21 @@ sns.regplot(data.reading_scores_exceed, data.avg_class_size, ci=None).set_title(
 # *For question 7, a bar graph of schools, rank-ordered by decreasing number of 
 # acceptances of students to HSPHS would be nice to see.
 
-def categorical_Counter(data):
-    import numpy as np
-      # declaring the dictionary categories, where the variables are the keys
-      # and the frequency of the variable are the values
-    categories = {}
-    for variable in data:
-        if variable not in categories.keys():
-            categories[variable] = 1
-        elif variable in categories.keys():
-            categories[variable] = categories.get(variable) + 1
-    categories = np.array(sorted(categories.items(),key=operator.itemgetter(1),reverse=False))
-    return categories
+# def categorical_Counter(data):
+#     import numpy as np
+#       # declaring the dictionary categories, where the variables are the keys
+#       # and the frequency of the variable are the values
+#     categories = {}
+#     for variable in data:
+#         if variable not in categories.keys():
+#             categories[variable] = 1
+#         elif variable in categories.keys():
+#             categories[variable] = categories.get(variable) + 1
+#     categories = np.array(sorted(categories.items(),key=operator.itemgetter(1),reverse=False))
+#     return categories
 
-ranks = categorical_Counter(HSPHS_acceptances)
-sorted(ranks)
+# ranks = categorical_Counter(HSPHS_acceptances)
+# sorted(ranks)
 # ranks = pd.DataFrame(data = ranks,columns = ['ranks','frequency'] )
 # data2  = pd.concat([rankss,data['acceptances']], axis=1).dropna().to_numpy()
 
@@ -412,7 +419,7 @@ sorted(ranks)
 # plt.title("Students enrolled in different courses")
 # plt.show()
 soma = sum(HSPHS_acceptances)
-sort = HSPHS_acceptances.sort_values(ascending=False)
+sort = HSPHS_acceptances.sort_values(ascending=True).to_numpy()
 ranks = pd.DataFrame(data = sort,columns = ['acceptances'])
 
 
@@ -432,10 +439,10 @@ array =  np.arange(len(HSPHS_acceptances))
 array[::-1].sort()
 
 plt.plot( y, sort, color = 'red' )
-plt.bar(np.linspace(1,len(sort),len(sort)),sort, color = 'red')
-ax = sns.barplot( x = array,y = HSPHS_acceptances, data=HSPHS_acceptances,order =HSPHS_acceptances.sort_values())
+plt.bar(sort,height= sort ,color = 'red')
+ax = sns.barplot( x = order,y = sort, data=sort)
 ax.set(xlabel='common xlabel', ylabel='common ylabel')
-sns.histplot(x=sort, stat="frequency", bins=500,binwidth=3)
+sns.histplot(x=sort, stat="frequency", bins=500,binwidth=1)
 
 plt.xticks()
 plt.show()
@@ -490,16 +497,21 @@ plt.xlabel('Principal component (SATA)')
 plt.ylabel('Eigenvalue of SATA')
 plt.legend(['data','sata'])
 
+
 plt.bar(np.linspace(1,13,13),loadings[:,0])
-plt.xlabel('Question')
+plt.title('PCA 1')
+plt.xlabel('column')
 plt.ylabel('Loading')
 
 plt.bar(np.linspace(1,13,13),loadings[:,1])
-plt.xlabel('Question')
+plt.title('PCA 2')
+
+plt.xlabel('column')
 plt.ylabel('Loading')
 
 plt.bar(np.linspace(1,13,13),loadings[:,2])
-plt.xlabel('Question')
+plt.title('PCA 3')
+plt.xlabel('column')
 plt.ylabel('Loading')
 # 'per_pupil_spending','collaborative_teachers'  per_pupil_spending+ collaborative_teachers +
 acceptance_model = data[['acceptances','rigorous_instruction','per_pupil_spending','strong_family_community_ties','reading_scores_exceed','student_achievement']].dropna()
@@ -513,16 +525,3 @@ model_lin = sm.OLS.from_formula("student_achievement ~ per_pupil_spending + avg_
 result_lin = model_lin.fit()
 print(result_lin.summary())
 
-
-
-
-#%%
-# 9) Write an overall summary of your findings – what school characteristics seem to be most
-# relevant in determining acceptance of their students to HSPHS?
-
-#%%
-# 10) Imagine that you are working for the New York City Department of Education as a data
-# scientist (like one of my former students). What actionable recommendations would you make 
-# on how to improve schools so that they 
-# a) send more students to HSPHS and 
-# b) improve objective measures or achievement.
